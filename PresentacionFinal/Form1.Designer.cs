@@ -36,21 +36,23 @@
             this.lblBuscar = new System.Windows.Forms.Label();
             this.textBoxBuscar = new System.Windows.Forms.TextBox();
             this.textBoxDescripcion = new System.Windows.Forms.TextBox();
-            this.textBoxMarca = new System.Windows.Forms.TextBox();
-            this.textBox4 = new System.Windows.Forms.TextBox();
             this.textBoxPrecioInicial = new System.Windows.Forms.TextBox();
             this.textBoxPrecioFinal = new System.Windows.Forms.TextBox();
             this.lblMarca = new System.Windows.Forms.Label();
             this.lvlCategoria = new System.Windows.Forms.Label();
-            this.listViewArticulos = new System.Windows.Forms.ListView();
             this.btnFiltrar = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.dgvArticulos = new System.Windows.Forms.DataGridView();
             ((System.ComponentModel.ISupportInitialize)(this.pbFoto)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvArticulos)).BeginInit();
             this.SuspendLayout();
             // 
             // pbFoto
             // 
+            this.pbFoto.BackColor = System.Drawing.SystemColors.Control;
             this.pbFoto.Location = new System.Drawing.Point(350, 34);
             this.pbFoto.Name = "pbFoto";
             this.pbFoto.Size = new System.Drawing.Size(514, 516);
@@ -71,7 +73,7 @@
             // lblPrecio
             // 
             this.lblPrecio.AutoSize = true;
-            this.lblPrecio.Location = new System.Drawing.Point(225, 291);
+            this.lblPrecio.Location = new System.Drawing.Point(223, 289);
             this.lblPrecio.Name = "lblPrecio";
             this.lblPrecio.Size = new System.Drawing.Size(13, 13);
             this.lblPrecio.TabIndex = 2;
@@ -81,11 +83,10 @@
             // lblMostrarPrecio
             // 
             this.lblMostrarPrecio.AutoSize = true;
-            this.lblMostrarPrecio.Location = new System.Drawing.Point(244, 291);
+            this.lblMostrarPrecio.Location = new System.Drawing.Point(259, 289);
             this.lblMostrarPrecio.Name = "lblMostrarPrecio";
-            this.lblMostrarPrecio.Size = new System.Drawing.Size(25, 13);
+            this.lblMostrarPrecio.Size = new System.Drawing.Size(0, 13);
             this.lblMostrarPrecio.TabIndex = 4;
-            this.lblMostrarPrecio.Text = "dad";
             // 
             // lblArticulo
             // 
@@ -121,20 +122,6 @@
             this.textBoxDescripcion.Size = new System.Drawing.Size(508, 70);
             this.textBoxDescripcion.TabIndex = 8;
             // 
-            // textBoxMarca
-            // 
-            this.textBoxMarca.Location = new System.Drawing.Point(1255, 567);
-            this.textBoxMarca.Name = "textBoxMarca";
-            this.textBoxMarca.Size = new System.Drawing.Size(100, 20);
-            this.textBoxMarca.TabIndex = 9;
-            // 
-            // textBox4
-            // 
-            this.textBox4.Location = new System.Drawing.Point(1255, 593);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(100, 20);
-            this.textBox4.TabIndex = 10;
-            // 
             // textBoxPrecioInicial
             // 
             this.textBoxPrecioInicial.Location = new System.Drawing.Point(1255, 627);
@@ -152,7 +139,7 @@
             // lblMarca
             // 
             this.lblMarca.AutoSize = true;
-            this.lblMarca.Location = new System.Drawing.Point(1209, 574);
+            this.lblMarca.Location = new System.Drawing.Point(1202, 579);
             this.lblMarca.Name = "lblMarca";
             this.lblMarca.Size = new System.Drawing.Size(37, 13);
             this.lblMarca.TabIndex = 13;
@@ -161,20 +148,11 @@
             // lvlCategoria
             // 
             this.lvlCategoria.AutoSize = true;
-            this.lvlCategoria.Location = new System.Drawing.Point(1195, 600);
+            this.lvlCategoria.Location = new System.Drawing.Point(1185, 605);
             this.lvlCategoria.Name = "lvlCategoria";
             this.lvlCategoria.Size = new System.Drawing.Size(54, 13);
             this.lvlCategoria.TabIndex = 14;
             this.lvlCategoria.Text = "Categoría";
-            // 
-            // listViewArticulos
-            // 
-            this.listViewArticulos.HideSelection = false;
-            this.listViewArticulos.Location = new System.Drawing.Point(1091, 34);
-            this.listViewArticulos.Name = "listViewArticulos";
-            this.listViewArticulos.Size = new System.Drawing.Size(375, 516);
-            this.listViewArticulos.TabIndex = 16;
-            this.listViewArticulos.UseCompatibleStateImageBehavior = false;
             // 
             // btnFiltrar
             // 
@@ -188,42 +166,69 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(1202, 630);
+            this.label1.Location = new System.Drawing.Point(1202, 634);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(47, 13);
             this.label1.TabIndex = 18;
             this.label1.Text = "Desde $";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(1326, 630);
+            this.label2.Location = new System.Drawing.Point(1326, 634);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(44, 13);
             this.label2.TabIndex = 19;
             this.label2.Text = "Hasta $";
             // 
+            // comboBox1
+            // 
+            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(1245, 571);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(121, 21);
+            this.comboBox1.TabIndex = 20;
+            // 
+            // comboBox2
+            // 
+            this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox2.FormattingEnabled = true;
+            this.comboBox2.Location = new System.Drawing.Point(1245, 598);
+            this.comboBox2.Name = "comboBox2";
+            this.comboBox2.Size = new System.Drawing.Size(121, 21);
+            this.comboBox2.TabIndex = 21;
+            // 
+            // dgvArticulos
+            // 
+            this.dgvArticulos.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvArticulos.Location = new System.Drawing.Point(1085, 34);
+            this.dgvArticulos.Name = "dgvArticulos";
+            this.dgvArticulos.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvArticulos.Size = new System.Drawing.Size(367, 516);
+            this.dgvArticulos.TabIndex = 22;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.ClientSize = new System.Drawing.Size(1478, 652);
+            this.Controls.Add(this.lblMostrarPrecio);
+            this.Controls.Add(this.dgvArticulos);
+            this.Controls.Add(this.comboBox2);
+            this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.btnFiltrar);
-            this.Controls.Add(this.listViewArticulos);
             this.Controls.Add(this.lvlCategoria);
             this.Controls.Add(this.lblMarca);
             this.Controls.Add(this.textBoxPrecioFinal);
             this.Controls.Add(this.textBoxPrecioInicial);
-            this.Controls.Add(this.textBox4);
-            this.Controls.Add(this.textBoxMarca);
             this.Controls.Add(this.textBoxDescripcion);
             this.Controls.Add(this.textBoxBuscar);
             this.Controls.Add(this.lblBuscar);
             this.Controls.Add(this.lblArticulo);
-            this.Controls.Add(this.lblMostrarPrecio);
             this.Controls.Add(this.lblPrecio);
             this.Controls.Add(this.lblTitulo);
             this.Controls.Add(this.pbFoto);
@@ -232,6 +237,7 @@
             this.Text = "Catálogo";
             this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pbFoto)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvArticulos)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -247,16 +253,16 @@
         private System.Windows.Forms.Label lblBuscar;
         private System.Windows.Forms.TextBox textBoxBuscar;
         private System.Windows.Forms.TextBox textBoxDescripcion;
-        private System.Windows.Forms.TextBox textBoxMarca;
-        private System.Windows.Forms.TextBox textBox4;
         private System.Windows.Forms.TextBox textBoxPrecioInicial;
         private System.Windows.Forms.TextBox textBoxPrecioFinal;
         private System.Windows.Forms.Label lblMarca;
         private System.Windows.Forms.Label lvlCategoria;
-        private System.Windows.Forms.ListView listViewArticulos;
         private System.Windows.Forms.Button btnFiltrar;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox comboBox2;
+        private System.Windows.Forms.DataGridView dgvArticulos;
     }
 }
 
