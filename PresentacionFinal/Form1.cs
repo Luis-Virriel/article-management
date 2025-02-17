@@ -10,10 +10,12 @@ namespace PresentacionFinal
     public partial class Form1 : Form
     {
         private ArticuloBLL articuloBLL = new ArticuloBLL();
+        //private List<Articulo> listaArticulo;
 
         public Form1()
         {
             InitializeComponent();
+            dgvArticulos.SelectionChanged += dgvArticulos_SelectionChanged;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -25,16 +27,15 @@ namespace PresentacionFinal
 
         private void configurarColumnas()
         {
-            dgvArticulos.Columns["Id"].Visible = false; // Ocultamos Id
+            // Ocultar las columnas innecesarias
+            dgvArticulos.Columns["Id"].Visible = false;
             dgvArticulos.Columns["ImagenUrl"].Visible = false;
-            dgvArticulos.Columns["CategoriaDescripcion"].Visible = false;
             dgvArticulos.Columns["Precio"].Visible = false;
-
-            // Mostrar solo lo necesario
+            dgvArticulos.Columns["Descripcion"].Visible = false; 
+          
             dgvArticulos.Columns["Codigo"].HeaderText = "Código";
             dgvArticulos.Columns["Nombre"].HeaderText = "Nombre";
-           // dgvArticulos.Columns["ArticuloDescripcion"].HeaderText = "Descripción";
-            dgvArticulos.Columns["MarcaDescripcion"].HeaderText = "Marca";
+            
         }
 
         private void cargarDatos()
@@ -43,11 +44,19 @@ namespace PresentacionFinal
             {
                 if (dgvArticulos.CurrentRow != null)
                 {
-                    textBoxDescripcion.Text = dgvArticulos.CurrentRow.Cells["Descripcion"].Value.ToString();
-                    lblMostrarPrecio.Text = dgvArticulos.CurrentRow.Cells["Precio"].Value.ToString();
+                    textBoxDescripcion.Text = dgvArticulos.CurrentRow.Cells["Descripcion"].Value?.ToString() ?? "";
+                    lblMostrarPrecio.Text = dgvArticulos.CurrentRow.Cells["Precio"].Value?.ToString() ?? "0.00";
 
-                    string urlImagen = dgvArticulos.CurrentRow.Cells["ImagenUrl"].Value.ToString();
-                    cargarImagen(urlImagen);
+                    string urlImagen = dgvArticulos.CurrentRow.Cells["ImagenUrl"].Value?.ToString();
+
+                    if (!string.IsNullOrEmpty(urlImagen))
+                    {
+                        cargarImagen(urlImagen);
+                    }
+                    else
+                    {
+                        cargarImagen("hthttps://us.123rf.com/450wm/yehorlisnyi/yehorlisnyi2104/yehorlisnyi210400016/167492439-sin-foto-o-icono-de-imagen-en-blanco-cargando-im%C3%A1genes-o-marca-de-imagen-faltante-imagen-no.jpg");
+                    }
                 }
             }
             catch (Exception ex)
@@ -61,26 +70,60 @@ namespace PresentacionFinal
         {
             try
             {
-                if (!string.IsNullOrEmpty(imagen))
+                if (!string.IsNullOrWhiteSpace(imagen))
                 {
-                    pbFoto.Load(imagen);
+                    pbFoto.LoadAsync(imagen);
                 }
                 else
                 {
-                    pbFoto.Load("https://via.placeholder.com/300"); // Imagen de respaldo
+                    pbFoto.LoadAsync("https://us.123rf.com/450wm/yehorlisnyi/yehorlisnyi2104/yehorlisnyi210400016/167492439-sin-foto-o-icono-de-imagen-en-blanco-cargando-im%C3%A1genes-o-marca-de-imagen-faltante-imagen-no.jpg");
+                }
+            }
+            catch (Exception)
+            {
+                pbFoto.LoadAsync("https://us.123rf.com/450wm/yehorlisnyi/yehorlisnyi2104/yehorlisnyi210400016/167492439-sin-foto-o-icono-de-imagen-en-blanco-cargando-im%C3%A1genes-o-marca-de-imagen-faltante-imagen-no.jpg");
+            }
+        }
+
+
+        private void dgvArticulos_SelectionChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                if (dgvArticulos.CurrentRow != null)
+                {
+                    var seleccionado = dgvArticulos.CurrentRow.DataBoundItem as Articulo;
+                    if (seleccionado != null)
+                    {
+                        textBoxDescripcion.Text = seleccionado.Descripcion;
+                        lblMostrarPrecio.Text = seleccionado.Precio.ToString("C");
+
+                        string urlImagen = seleccionado.ImagenUrl;
+
+                        if (string.IsNullOrWhiteSpace(urlImagen) || !Uri.IsWellFormedUriString(urlImagen, UriKind.Absolute))
+                        {
+                            urlImagen = "https://us.123rf.com/450wm/yehorlisnyi/yehorlisnyi2104/yehorlisnyi210400016/167492439-sin-foto-o-icono-de-imagen-en-blanco-cargando-im%C3%A1genes-o-marca-de-imagen-faltante-imagen-no.jpg";
+                        }
+
+                        cargarImagen(urlImagen);
+                    }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error al cargar la imagen: " + ex.Message);
-                pbFoto.Load("https://via.placeholder.com/300"); // Imagen de respaldo en caso de error
+                MessageBox.Show("Error al cambiar de selección: " + ex.Message);
             }
         }
 
-        private void dgvArticulos_SelectionChanged(object sender, EventArgs e)
+        private void btnAgregar_Click(object sender, EventArgs e)
         {
+            FormularioCrear NuevoFormulario = new FormularioCrear();
+            NuevoFormulario.ShowDialog();
             cargarDatos();
         }
+
+
+
         /*rivate void FiltrarDatos(string filtro)
         {
             DataTable dt = (DataTable)dgvArticulos.DataSource;
@@ -91,5 +134,5 @@ namespace PresentacionFinal
         {
             FiltrarDatos(textBoxBuscar.Text);
         }*/
-    } 
+    }
 }

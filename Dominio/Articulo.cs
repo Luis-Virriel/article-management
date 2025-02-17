@@ -12,8 +12,7 @@ public class Articulo
     public Categoria Categoria { get; set; }
 
     
-    public string MarcaDescripcion => Marca?.Descripcion ?? "Sin Marca";
-    public string CategoriaDescripcion => Categoria?.Descripcion ?? "Sin Marca";
+   
     
 
 }
