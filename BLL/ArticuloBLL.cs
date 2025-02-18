@@ -2,7 +2,6 @@
 using Dominio;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 
 namespace BLL
 {
@@ -62,6 +61,129 @@ namespace BLL
             }
 
             return listaArticulos;
+        }
+
+        public void agregar(Articulo articuloNuevo)
+        {
+            ArticuloDAL datos = new ArticuloDAL();
+            try
+            {
+                datos.setearConsulta("INSERT INTO ARTICULOS (Codigo, Nombre, Descripcion, ImagenUrl, IdMarca, IdCategoria, Precio) " +
+                              "VALUES (@Codigo, @Nombre, @Descripcion, @ImagenUrl, @IdMarca, @IdCategoria, @Precio)");
+                datos.setearParametro("@Codigo", articuloNuevo.Codigo);
+                datos.setearParametro("@Nombre", articuloNuevo.Nombre);
+                datos.setearParametro("@Descripcion", articuloNuevo.Descripcion);
+                datos.setearParametro("@ImagenUrl", articuloNuevo.ImagenUrl ?? (object)DBNull.Value); 
+                datos.setearParametro("@IdMarca", articuloNuevo.Marca.Id);
+                datos.setearParametro("@IdCategoria", articuloNuevo.Categoria.Id);
+                datos.setearParametro("@Precio", articuloNuevo.Precio);
+                datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+        public void modificar(Articulo articulo)
+        {
+            ArticuloDAL datos = new ArticuloDAL();
+            try
+            {
+                datos.setearConsulta("update ARTICULOS set Codigo = @Codigo, Nombre = @nombre, Descripcion = @descripcion, ImagenUrl = @img, IdMarca = @IdMarca, IdCategoria = @idCategoria, Precio = @precio Where Id = @id");
+                datos.setearParametro("@Codigo", articulo.Codigo);
+
+                datos.setearParametro("@nombre", articulo.Nombre);
+ 
+                datos.setearParametro("@descipcion", articulo.Descripcion);
+
+                datos.setearParametro("@img", articulo.ImagenUrl);
+
+                datos.setearParametro("@idMarca", articulo.Marca.Id);
+
+                datos.setearParametro("@idCategoria", articulo.Categoria.Id);
+
+                datos.setearParametro("@precio", articulo.Precio);
+
+                datos.setearParametro("@id", articulo.Id);
+
+                datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+        public List<Marca> ObtenerMarcas()
+        {
+            List<Marca> listaMarcas = new List<Marca>();
+
+            try
+            {
+                articuloDAL.setearConsulta("SELECT Id, Descripcion FROM Marcas");
+
+                articuloDAL.ejecutarLectura();
+
+                while (articuloDAL.Lector.Read())
+                {
+                    Marca marca = new Marca
+                    {
+                        Id = Convert.ToInt32(articuloDAL.Lector["Id"]),
+                        Descripcion = articuloDAL.Lector["Descripcion"].ToString()
+                    };
+
+                    listaMarcas.Add(marca);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener las marcas: " + ex.Message);
+            }
+            finally
+            {
+                articuloDAL.cerrarConexion();
+            }
+
+            return listaMarcas;
+        }
+        public List<Categoria> ObtenerCategorias()
+        {
+            List<Categoria> listaCategorias = new List<Categoria>();
+
+            try
+            {
+                articuloDAL.setearConsulta("SELECT Id, Descripcion FROM Categorias");
+
+                articuloDAL.ejecutarLectura();
+
+                while (articuloDAL.Lector.Read())
+                {
+                    Categoria categoria = new Categoria
+                    {
+                        Id = Convert.ToInt32(articuloDAL.Lector["Id"]),
+                        Descripcion = articuloDAL.Lector["Descripcion"].ToString()
+                    };
+
+                    listaCategorias.Add(categoria);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener las categorías: " + ex.Message);
+            }
+            finally
+            {
+                articuloDAL.cerrarConexion();
+            }
+
+            return listaCategorias;
         }
     }
 }
