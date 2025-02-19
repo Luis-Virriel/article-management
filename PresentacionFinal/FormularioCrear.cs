@@ -16,9 +16,11 @@ namespace PresentacionFinal
     {
         private Articulo articulo = null;
         private OpenFileDialog archivo = null;
+        private Articulo lista = new Articulo();
         public FormularioCrear()
         {
             InitializeComponent();
+            
         }
         public FormularioCrear(Articulo articulo)
         {
@@ -83,8 +85,10 @@ namespace PresentacionFinal
                 {
                     negocio.agregar(articulo); 
                     MessageBox.Show("Agregado exitosamente");
+                    
                 }
-
+                this.DialogResult = DialogResult.OK;
+                
                 Close();
             }
             catch (Exception ex)
@@ -99,6 +103,7 @@ namespace PresentacionFinal
             ArticuloBLL negocio = new ArticuloBLL();
             try
             {
+                // Cargar las marcas y categorías
                 cbMarca.DataSource = negocio.ObtenerMarcas();
                 cbMarca.ValueMember = "Id";
                 cbMarca.DisplayMember = "Descripcion";
@@ -107,22 +112,34 @@ namespace PresentacionFinal
                 cbCategoria.ValueMember = "Id";
                 cbCategoria.DisplayMember = "Descripcion";
 
-                /*if (negocio != null)
+                // Si no se ha pasado un artículo para modificar, crear uno nuevo
+                if (articulo == null)
                 {
-                    articulo.Codigo = txtCodigo.Text;
-                    articulo.Nombre = txtNombre.Text;
-                    articulo.Descripcion = txtDescripcion.Text;
-                    articulo.ImagenUrl = txtUrlImagen.Text;
-                    //cargarImagen(negocio.Url);
-                    cbMarca.SelectedValue = articulo.Marca.Id;
-                    cbCategoria.SelectedValue = articulo.Categoria.Id;
-                }*/
+                    articulo = new Articulo();
+                }
+                else
+                {
+                    // Cargar los valores del artículo en los controles del formulario
+                    txtCodigo.Text = articulo.Codigo;
+                    txtNombre.Text = articulo.Nombre;
+                    txtDescripcion.Text = articulo.Descripcion;
+                    txtUrlImagen.Text = articulo.ImagenUrl;
+                    txtPrecio.Text = articulo.Precio.ToString("0.00"); // Formatear el precio para mostrarlo correctamente
+                    cbMarca.SelectedValue = articulo.Marca?.Id;
+                    cbCategoria.SelectedValue = articulo.Categoria?.Id;
+
+                    // Cargar la imagen en el PictureBox si existe
+                    cargarImagen(articulo.ImagenUrl);
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString());
             }
         }
-        
+
+
+
+
     }
 }

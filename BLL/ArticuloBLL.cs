@@ -2,12 +2,14 @@
 using Dominio;
 using System;
 using System.Collections.Generic;
+using System.Xml.Linq;
 
 namespace BLL
 {
     public class ArticuloBLL
     {
         private ArticuloDAL articuloDAL = new ArticuloDAL();
+
 
         public List<Articulo> ObtenerArticulos()
         {
@@ -62,7 +64,7 @@ namespace BLL
 
             return listaArticulos;
         }
-
+        
         public void agregar(Articulo articuloNuevo)
         {
             ArticuloDAL datos = new ArticuloDAL();
@@ -77,7 +79,9 @@ namespace BLL
                 datos.setearParametro("@IdMarca", articuloNuevo.Marca.Id);
                 datos.setearParametro("@IdCategoria", articuloNuevo.Categoria.Id);
                 datos.setearParametro("@Precio", articuloNuevo.Precio);
+
                 datos.ejecutarAccion();
+                
             }
             catch (Exception ex)
             {
@@ -98,7 +102,7 @@ namespace BLL
 
                 datos.setearParametro("@nombre", articulo.Nombre);
  
-                datos.setearParametro("@descipcion", articulo.Descripcion);
+                datos.setearParametro("@descripcion", articulo.Descripcion);
 
                 datos.setearParametro("@img", articulo.ImagenUrl);
 
@@ -118,6 +122,30 @@ namespace BLL
             }
             finally
             {
+                datos.cerrarConexion();
+            }
+        }
+        public void eliminar(int idArticulo)
+        {
+            ArticuloDAL datos = new ArticuloDAL();
+            try
+            {
+                // Definir la consulta SQL para eliminar el artículo por su Id
+                datos.setearConsulta("DELETE FROM ARTICULOS WHERE Id = @id");
+
+                // Asignar el parámetro @id con el valor del Id del artículo
+                datos.setearParametro("@id", idArticulo);
+
+                // Ejecutar la acción de eliminación
+                datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al eliminar el artículo: " + ex.Message);
+            }
+            finally
+            {
+                // Cerrar la conexión
                 datos.cerrarConexion();
             }
         }
