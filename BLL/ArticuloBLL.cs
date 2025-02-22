@@ -130,13 +130,8 @@ namespace BLL
             ArticuloDAL datos = new ArticuloDAL();
             try
             {
-                // Definir la consulta SQL para eliminar el artículo por su Id
                 datos.setearConsulta("DELETE FROM ARTICULOS WHERE Id = @id");
-
-                // Asignar el parámetro @id con el valor del Id del artículo
                 datos.setearParametro("@id", idArticulo);
-
-                // Ejecutar la acción de eliminación
                 datos.ejecutarAccion();
             }
             catch (Exception ex)
@@ -145,7 +140,6 @@ namespace BLL
             }
             finally
             {
-                // Cerrar la conexión
                 datos.cerrarConexion();
             }
         }
@@ -213,5 +207,81 @@ namespace BLL
 
             return listaCategorias;
         }
+        public List<Articulo> filtrar(string marca, string categoria, decimal precioInicial, decimal precioFinal)
+        {
+            List<Articulo> lista = new List<Articulo>();
+            ArticuloDAL datos = new ArticuloDAL();
+
+            try
+            {
+                string consulta = "SELECT A.Id AS ArticuloId, A.Codigo, A.Nombre, A.Descripcion AS ArticuloDescripcion, " +
+                                  "M.Id AS MarcaId, M.Descripcion AS MarcaDescripcion, " +
+                                  "C.Id AS CategoriaId, C.Descripcion AS CategoriaDescripcion, " +
+                                  "A.ImagenUrl, A.Precio " +
+                                  "FROM Articulos A " +
+                                  "INNER JOIN Marcas M ON A.IdMarca = M.Id " +
+                                  "INNER JOIN Categorias C ON A.IdCategoria = C.Id ";
+
+                consulta += " WHERE 1=1 ";
+
+                if (!string.IsNullOrEmpty(marca))
+                {
+                    consulta += $" AND M.Descripcion = '{marca}' ";
+                }
+
+                if (!string.IsNullOrEmpty(categoria))
+                {
+                    consulta += $" AND C.Descripcion = '{categoria}' ";
+                }
+                consulta += $" AND A.Precio BETWEEN {precioInicial} AND {precioFinal} ";
+
+                
+
+                datos.setearConsulta(consulta);
+                datos.ejecutarLectura();
+
+                while (datos.Lector.Read())
+                {
+                    Articulo aux = new Articulo
+                    {
+                        Id = (int)datos.Lector["ArticuloId"],
+                        Codigo = (string)datos.Lector["Codigo"],
+                        Nombre = (string)datos.Lector["Nombre"],
+                        Precio = (decimal)datos.Lector["Precio"],
+                        Descripcion = (string)datos.Lector["ArticuloDescripcion"],
+                        ImagenUrl = datos.Lector["ImagenUrl"] is DBNull ? null : (string)datos.Lector["ImagenUrl"],
+
+                        Marca = new Marca
+                        {
+                            Id = (int)datos.Lector["MarcaId"],
+                            Descripcion = (string)datos.Lector["MarcaDescripcion"]
+                        },
+
+                        Categoria = new Categoria
+                        {
+                            Id = (int)datos.Lector["CategoriaId"],
+                            Descripcion = (string)datos.Lector["CategoriaDescripcion"]
+                        }
+                    };
+
+                    lista.Add(aux);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error en el filtrado: " + ex.Message);
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+
+            return lista;
+        }
+
+
+
+
+
     }
 }

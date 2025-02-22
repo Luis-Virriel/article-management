@@ -21,8 +21,15 @@ namespace PresentacionFinal
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            // Asegúrate de que los artículos se carguen correctamente
             listaArticulos = articuloBLL.ObtenerArticulos();
+            cbMarca.DataSource = articuloBLL.ObtenerMarcas();
+            cbMarca.ValueMember = "Id";
+            cbMarca.DisplayMember = "Descripcion";
+
+            cbCategoria.DataSource = articuloBLL.ObtenerCategorias();
+            cbCategoria.ValueMember = "Id";
+            cbCategoria.DisplayMember = "Descripcion";
+
             if (listaArticulos != null)
             {
                 dgvArticulos.DataSource = listaArticulos;
@@ -55,7 +62,7 @@ namespace PresentacionFinal
         }
         private void configurarColumnas()
         {
-            // Ocultar las columnas innecesarias
+
             dgvArticulos.Columns["Id"].Visible = false;
             dgvArticulos.Columns["ImagenUrl"].Visible = false;
             dgvArticulos.Columns["Precio"].Visible = false;
@@ -98,19 +105,15 @@ namespace PresentacionFinal
         {
             try
             {
-                // Verificar si la URL es válida
                 Uri uriResult;
                 bool isValidUrl = Uri.TryCreate(imagen, UriKind.Absolute, out uriResult)
                                   && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
-
-                // Si la URL es válida, cargar la imagen
                 if (isValidUrl)
                 {
                     pbFoto.LoadAsync(imagen);
                 }
                 else
                 {
-                    // Si no es válida, cargar la imagen predeterminada
                     pbFoto.LoadAsync("https://us.123rf.com/450wm/yehorlisnyi/yehorlisnyi2104/yehorlisnyi210400016/167492439-sin-foto-o-icono-de-imagen-en-blanco-cargando-im%C3%A1genes-o-marca-de-imagen-faltante-imagen-no.jpg");
                 }
             }
@@ -120,9 +123,6 @@ namespace PresentacionFinal
                 pbFoto.LoadAsync("https://us.123rf.com/450wm/yehorlisnyi/yehorlisnyi2104/yehorlisnyi210400016/167492439-sin-foto-o-icono-de-imagen-en-blanco-cargando-im%C3%A1genes-o-marca-de-imagen-faltante-imagen-no.jpg");
             }
         }
-
-
-
         private void dgvArticulos_SelectionChanged(object sender, EventArgs e)
         {
             try
@@ -166,13 +166,10 @@ namespace PresentacionFinal
         {
             if (listaArticulos != null && listaArticulos.Count > 0)
             {
-                // Filtrar artículos según el filtro (nombre o marca)
                 var listaFiltrada = listaArticulos.FindAll(x =>
                     x.Nombre.ToUpper().Contains(filtro.ToUpper()) ||
                     x.Marca.Descripcion.ToUpper().Contains(filtro.ToUpper())
                 );
-
-                // Asignar la lista filtrada al DataGridView
                 dgvArticulos.DataSource = listaFiltrada;
             }
         }
@@ -255,17 +252,64 @@ namespace PresentacionFinal
 
         private void textBoxBuscar_TextChanged_1(object sender, EventArgs e)
         {
-            // Solo aplicar el filtro si el texto tiene 3 o más caracteres
+            
             if (textBoxBuscar.Text.Length >= 3)
             {
                 FiltrarDatos(textBoxBuscar.Text);
             }
             else
             {
-                // Si el texto es menor a 3 caracteres, mostrar todos los artículos
+                
                 dgvArticulos.DataSource = listaArticulos;
             }
-            configurarColumnas();  // Vuelve a configurar las columnas para que no se pierdan
+            configurarColumnas();  
+        }
+
+        private void btnFiltrar_Click(object sender, EventArgs e)
+        {
+            ArticuloBLL negocio = new ArticuloBLL();
+            try
+            {
+                if (validarFiltro())
+                    return;
+
+                string marca = cbMarca.SelectedItem?.ToString() ?? "";
+                string categoria = cbCategoria.SelectedItem?.ToString() ?? "";
+                decimal precioInicial = 0;
+                decimal precioFinal = 99999999;
+                if (string.IsNullOrEmpty(textBoxPrecioInicial.Text))
+                    textBoxPrecioInicial.Text = precioInicial.ToString();
+                else
+                    decimal.TryParse(textBoxPrecioInicial.Text, out precioInicial);
+
+                if (string.IsNullOrEmpty(textBoxPrecioFinal.Text))
+                    textBoxPrecioFinal.Text = precioFinal.ToString();
+                else
+                    decimal.TryParse(textBoxPrecioFinal.Text, out precioFinal);
+
+                dgvArticulos.DataSource = negocio.filtrar(marca, categoria, precioInicial, precioFinal);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
+            }
+        }
+
+
+        private bool validarFiltro()
+        {
+            if (cbMarca.SelectedIndex < 0)
+            {
+                MessageBox.Show("Por favor, seleccione el campo para filtrar.");
+                return true;
+            }
+            if (cbCategoria.SelectedIndex < 0)
+            {
+                MessageBox.Show("Por favor, seleccione el criterio para filtrar.");
+                return true;
+            }
+            
+            return false;
         }
     }
 }

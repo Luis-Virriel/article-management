@@ -63,37 +63,55 @@ namespace PresentacionFinal
             ArticuloBLL negocio = new ArticuloBLL();
             try
             {
+                if (string.IsNullOrWhiteSpace(txtCodigo.Text) ||
+                    string.IsNullOrWhiteSpace(txtNombre.Text) ||
+                    string.IsNullOrWhiteSpace(txtDescripcion.Text) ||
+                    string.IsNullOrWhiteSpace(txtPrecio.Text))
+                {
+                    MessageBox.Show("Todos los campos son obligatorios.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (!decimal.TryParse(txtPrecio.Text, out decimal precio) || precio < 0)
+                {
+                    MessageBox.Show("Ingrese un precio válido (número positivo).", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (cbMarca.SelectedItem == null || cbCategoria.SelectedItem == null)
+                {
+                    MessageBox.Show("Debe seleccionar una Marca y una Categoría.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
                 if (articulo == null)
                 {
                     articulo = new Articulo();
                 }
-
-                articulo.Codigo = txtCodigo.Text;
-                articulo.Nombre = txtNombre.Text;
-                articulo.Descripcion = txtDescripcion.Text;
-                articulo.ImagenUrl = txtUrlImagen.Text;
-                articulo.Precio = Convert.ToDecimal(txtPrecio.Text);
+                articulo.Codigo = txtCodigo.Text.Trim();
+                articulo.Nombre = txtNombre.Text.Trim();
+                articulo.Descripcion = txtDescripcion.Text.Trim();
+                articulo.ImagenUrl = txtUrlImagen.Text.Trim();
+                articulo.Precio = precio;
                 articulo.Marca = (Marca)cbMarca.SelectedItem;
                 articulo.Categoria = (Categoria)cbCategoria.SelectedItem;
-
                 if (articulo.Id != 0)
                 {
                     negocio.modificar(articulo);
-                    MessageBox.Show("Modificado exitosamente");
+                    MessageBox.Show("Modificado exitosamente", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
-                    negocio.agregar(articulo); 
-                    MessageBox.Show("Agregado exitosamente");
-                    
+                    negocio.agregar(articulo);
+                    MessageBox.Show("Agregado exitosamente", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
+
                 this.DialogResult = DialogResult.OK;
-                
                 Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error al guardar: " + ex.Message);
+                MessageBox.Show("Error al guardar: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -103,7 +121,6 @@ namespace PresentacionFinal
             ArticuloBLL negocio = new ArticuloBLL();
             try
             {
-                // Cargar las marcas y categorías
                 cbMarca.DataSource = negocio.ObtenerMarcas();
                 cbMarca.ValueMember = "Id";
                 cbMarca.DisplayMember = "Descripcion";
@@ -112,23 +129,19 @@ namespace PresentacionFinal
                 cbCategoria.ValueMember = "Id";
                 cbCategoria.DisplayMember = "Descripcion";
 
-                // Si no se ha pasado un artículo para modificar, crear uno nuevo
                 if (articulo == null)
                 {
                     articulo = new Articulo();
                 }
                 else
                 {
-                    // Cargar los valores del artículo en los controles del formulario
                     txtCodigo.Text = articulo.Codigo;
                     txtNombre.Text = articulo.Nombre;
                     txtDescripcion.Text = articulo.Descripcion;
                     txtUrlImagen.Text = articulo.ImagenUrl;
-                    txtPrecio.Text = articulo.Precio.ToString("0.00"); // Formatear el precio para mostrarlo correctamente
+                    txtPrecio.Text = articulo.Precio.ToString("0.00"); 
                     cbMarca.SelectedValue = articulo.Marca?.Id;
                     cbCategoria.SelectedValue = articulo.Categoria?.Id;
-
-                    // Cargar la imagen en el PictureBox si existe
                     cargarImagen(articulo.ImagenUrl);
                 }
             }
@@ -137,7 +150,10 @@ namespace PresentacionFinal
                 MessageBox.Show(ex.ToString());
             }
         }
-
+        private bool soloNumeros(string cadena)
+        {
+            return !string.IsNullOrEmpty(cadena) && cadena.All(char.IsDigit);
+        }
 
 
 
